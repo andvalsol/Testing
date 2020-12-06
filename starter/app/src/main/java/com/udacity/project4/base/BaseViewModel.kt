@@ -3,6 +3,9 @@ package com.udacity.project4.base
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import com.udacity.project4.authentication.utils.AuthenticationState
+import com.udacity.project4.authentication.utils.FirebaseUserLiveData
 import com.udacity.project4.utils.SingleLiveEvent
 
 /**
@@ -10,6 +13,10 @@ import com.udacity.project4.utils.SingleLiveEvent
  */
 abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
 
+    val authenticationState =  FirebaseUserLiveData().map { user ->
+        if (user == null) AuthenticationState.UNAUTHENTICATED
+        else AuthenticationState.AUTHENTICATED
+    }
     val navigationCommand: SingleLiveEvent<NavigationCommand> = SingleLiveEvent()
     val showErrorMessage: SingleLiveEvent<String> = SingleLiveEvent()
     val showSnackBar: SingleLiveEvent<String> = SingleLiveEvent()

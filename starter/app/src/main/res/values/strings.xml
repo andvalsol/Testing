@@ -32,6 +32,7 @@
     <string name="welcome">Welcome</string>
     <string name="err_enter_title">Please enter title</string>
     <string name="err_select_location">Please select location</string>
+    <string name="err_enter_description">Please enter description</string>
 
     <!-- Error strings -->
     <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
@@ -41,4 +42,5 @@
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
     <string name="login_with_google">Login with Google</string>
     <string name="error_login_in">Sorry, there was an error login in</string>
+    <string name="save_location">Save location</string>
 </resources>

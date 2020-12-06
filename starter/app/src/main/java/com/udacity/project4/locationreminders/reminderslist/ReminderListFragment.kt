@@ -1,8 +1,11 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -19,13 +22,18 @@ class ReminderListFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_reminders, container, false
             )
         binding.viewModel = _viewModel
+
+        _viewModel.authenticationState.observe(viewLifecycleOwner, Observer {
+            // Log the user out
+            logOutUser(requireContext())
+        })
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(false)
@@ -51,6 +59,10 @@ class ReminderListFragment : BaseFragment() {
         _viewModel.loadReminders()
     }
 
+    private fun logOutUser(context: Context) {
+        AuthUI.getInstance().signOut(context)
+    }
+
     private fun navigateToAddReminder() {
         //use the navigationCommand live data to navigate between the fragments
         _viewModel.navigationCommand.postValue(
@@ -70,9 +82,7 @@ class ReminderListFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.logout -> {
-//                TODO: add the logout implementation
-            }
+            R.id.logout -> logOutUser(requireContext())
         }
         return super.onOptionsItemSelected(item)
 
