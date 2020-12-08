@@ -16,6 +16,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -42,6 +44,10 @@ class SelectLocationFragment : BaseFragment() {
 
     // Create only one marker
     private var _marker: Marker? = null
+        set(value) {
+            field = value
+            _viewModel.setLatLng(field!!.position)
+        }
 
     private val REQUEST_LOCATION_PERMISSION = 1
 
@@ -66,7 +72,7 @@ class SelectLocationFragment : BaseFragment() {
         setDisplayHomeAsUpEnabled(true)
 
         _viewModel.selectedPOI.observe(viewLifecycleOwner, Observer {
-            findNavController().navigate(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+            findNavController().popBackStack()
         })
 
         return binding.root
@@ -127,7 +133,6 @@ class SelectLocationFragment : BaseFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        // TODO: Change the map type based on the user's selection.
         R.id.normal_map -> {
             _map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
