@@ -43,4 +43,7 @@
     <string name="login_with_google">Login with Google</string>
     <string name="error_login_in">Sorry, there was an error login in</string>
     <string name="save_location">Save location</string>
+    <string name="remember_to">Remember to </string>
+    <string name="no_reminders_saved">There are no reminders saved</string>
+    <string name="error_general">Sorry, there was an error</string>
 </resources>

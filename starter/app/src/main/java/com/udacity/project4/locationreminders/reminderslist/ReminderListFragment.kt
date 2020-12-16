@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
@@ -30,10 +31,7 @@ class ReminderListFragment : BaseFragment() {
             )
         binding.viewModel = _viewModel
 
-        _viewModel.authenticationState.observe(viewLifecycleOwner, Observer {
-            // Log the user out
-            logOutUser(requireContext())
-        })
+        addObservers()
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(false)
@@ -44,18 +42,40 @@ class ReminderListFragment : BaseFragment() {
         return binding.root
     }
 
+    private fun addObservers() {
+        with(_viewModel) {
+            authenticationState.observe(viewLifecycleOwner, Observer {
+                // Log the user out
+                logOutUser(requireContext())
+            })
+
+            showNoData.observe(viewLifecycleOwner, Observer {
+                showToast(requireContext(), getString(R.string.no_reminders_saved))
+            })
+
+            showErrorMessage.observe(viewLifecycleOwner, Observer {
+                showToast(requireContext(), getString(R.string.error_general))
+            })
+        }
+    }
+
+    private fun showToast(context: Context, messageToShow: String, displayTime: Int = Toast.LENGTH_LONG) {
+        Toast.makeText(context, messageToShow, displayTime).show()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         setupRecyclerView()
+
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        //load the reminders list on the ui
+    override fun onStart() {
+        super.onStart()
+        //load the reminders list on the ui. NOTE: Adding this here can cause duplication
         _viewModel.loadReminders()
     }
 
@@ -64,7 +84,7 @@ class ReminderListFragment : BaseFragment() {
     }
 
     private fun navigateToAddReminder() {
-        //use the navigationCommand live data to navigate between the fragments
+        // use the navigationCommand live data to navigate between the fragments
         _viewModel.navigationCommand.postValue(
             NavigationCommand.To(
                 ReminderListFragmentDirections.toSaveReminder()
@@ -74,6 +94,8 @@ class ReminderListFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = RemindersListAdapter {
+            // Show a Toast message when the reminder is clicked
+            Toast.makeText(requireContext(), getString(R.string.remember_to) + it.title, Toast.LENGTH_LONG).show()
         }
 
 //        setup the recycler view using the extension function
@@ -93,5 +115,4 @@ class ReminderListFragment : BaseFragment() {
 //        display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
     }
-
 }

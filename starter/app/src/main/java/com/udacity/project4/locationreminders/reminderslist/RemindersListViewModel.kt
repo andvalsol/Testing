@@ -41,6 +41,9 @@ class RemindersListViewModel(
                         )
                     })
                     remindersList.value = dataList
+
+                    // Check if the list of reminders have values in them
+                    if (dataList.isEmpty()) showNoData.postValue(true)
                 }
                 is Result.Error ->
                     showSnackBar.value = result.message
