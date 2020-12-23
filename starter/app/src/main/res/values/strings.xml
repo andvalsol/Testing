@@ -46,4 +46,6 @@
     <string name="remember_to">Remember to </string>
     <string name="no_reminders_saved">There are no reminders saved</string>
     <string name="error_general">Sorry, there was an error</string>
+    <string name="error_logging_out">Sorry , there was an error logging out</string>
+    <string name="your_location">Your location</string>
 </resources>

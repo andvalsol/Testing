@@ -18,6 +18,7 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersDatabase
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
@@ -69,7 +70,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
                 )
             }
             single { RemindersLocalRepository(get()) as ReminderDataSource }
-            single { RemindersDatabase.getInstance(appContext).reminderDao }
+            single { LocalDB.createRemindersDao(appContext) }
         }
         //declare a new koin module
         startKoin {

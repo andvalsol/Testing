@@ -1,13 +1,17 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigator
 import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
+import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
@@ -80,7 +84,17 @@ class ReminderListFragment : BaseFragment() {
     }
 
     private fun logOutUser(context: Context) {
-        AuthUI.getInstance().signOut(context)
+        AuthUI.getInstance()
+            .signOut(context)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    startActivity(Intent(requireContext(), AuthenticationActivity::class.java))
+
+                    // Flush the back stack
+                    finishAffinity(requireActivity())
+                } else
+                    showToast(requireContext(), getString(R.string.error_logging_out))
+        }
     }
 
     private fun navigateToAddReminder() {
