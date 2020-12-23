@@ -14,18 +14,24 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 
-class LocationRequester(private val context: Context) {
+class LocationRequester(private val fragment: Fragment) {
 
     private val flpClient: FusedLocationProviderClient by lazy {
-        LocationServices.getFusedLocationProviderClient(context)
+        LocationServices.getFusedLocationProviderClient(fragment.requireContext())
     }
 
-    fun isLocationEnabled(): Boolean {
-        val locationManager =
-            context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    private val resultLauncher = fragment.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+        checkDeviceLocationSettings(
+            fragment,
+            false,
+            onSuccessCallback,
+            onFailureCallback
+        )
     }
+
+    private  var onSuccessCallback: (() -> Unit)? = null
+    private var onFailureCallback: (() -> Unit)? = null
+
 
     fun checkDeviceLocationSettings(
         fragment: Fragment,
@@ -33,6 +39,10 @@ class LocationRequester(private val context: Context) {
         onSuccessCallback: (() -> Unit)? = null,
         onFailureCallback: (() -> Unit)? = null
     ) {
+        // Initialize the onSuccessCallback and the onFailureCallback
+        this.onSuccessCallback = onSuccessCallback
+        this.onFailureCallback = onFailureCallback
+
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
         }
@@ -49,14 +59,7 @@ class LocationRequester(private val context: Context) {
         locationSettingsResponseTask.addOnFailureListener { exception ->
             if (exception is ResolvableApiException && resolve) {
                 try {
-                    fragment.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-                        checkDeviceLocationSettings(
-                            fragment,
-                            false,
-                            onSuccessCallback,
-                            onFailureCallback
-                        )
-                    }.launch(IntentSenderRequest.Builder(exception.resolution.intentSender).build())
+                    resultLauncher.launch(IntentSenderRequest.Builder(exception.resolution.intentSender).build())
                 } catch (sendEx: IntentSender.SendIntentException) {
                     Log.d(TAG, "Error getting location settings resolution: " + sendEx.message)
                 }

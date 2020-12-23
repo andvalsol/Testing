@@ -12,6 +12,7 @@ import androidx.navigation.Navigator
 import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
+import com.udacity.project4.authentication.utils.AuthenticationState
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
@@ -48,9 +49,10 @@ class ReminderListFragment : BaseFragment() {
 
     private fun addObservers() {
         with(_viewModel) {
+
             authenticationState.observe(viewLifecycleOwner, Observer {
-                // Log the user out
-                logOutUser(requireContext())
+                if (it == AuthenticationState.UNAUTHENTICATED)
+                    logOutUser(requireContext())
             })
 
             showNoData.observe(viewLifecycleOwner, Observer {
@@ -63,7 +65,11 @@ class ReminderListFragment : BaseFragment() {
         }
     }
 
-    private fun showToast(context: Context, messageToShow: String, displayTime: Int = Toast.LENGTH_LONG) {
+    private fun showToast(
+        context: Context,
+        messageToShow: String,
+        displayTime: Int = Toast.LENGTH_LONG
+    ) {
         Toast.makeText(context, messageToShow, displayTime).show()
     }
 
@@ -94,7 +100,7 @@ class ReminderListFragment : BaseFragment() {
                     finishAffinity(requireActivity())
                 } else
                     showToast(requireContext(), getString(R.string.error_logging_out))
-        }
+            }
     }
 
     private fun navigateToAddReminder() {
@@ -109,7 +115,11 @@ class ReminderListFragment : BaseFragment() {
     private fun setupRecyclerView() {
         val adapter = RemindersListAdapter {
             // Show a Toast message when the reminder is clicked
-            Toast.makeText(requireContext(), getString(R.string.remember_to) + it.title, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.remember_to) + it.title,
+                Toast.LENGTH_LONG
+            ).show()
         }
 
 //        setup the recycler view using the extension function

@@ -1,4 +1,4 @@
-package com.udacity.project4.locationreminders.savereminder.selectreminderlocation
+    package com.udacity.project4.locationreminders.savereminder.selectreminderlocation
 
 
 import android.Manifest
@@ -66,7 +66,7 @@ class SelectLocationFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        locationRequester = LocationRequester(requireContext())
+        locationRequester = LocationRequester(this)
     }
 
     override fun onCreateView(
